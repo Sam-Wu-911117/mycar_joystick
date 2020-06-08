@@ -10,8 +10,8 @@ SoftwareSerial bluetooth(rxpin, txpin);
 Servo frontservo;
 int angle = 0;
 bool isFlashing = false;
-  
-void setup() {
+int Speed =0;
+void setup(){
   motor.setSpeed(200);
   motor.run(RELEASE);
   
@@ -44,19 +44,25 @@ void ExecCommand(int command){
   if(command==1) {
     motor.run(RELEASE);
     Serial.println("stop");
-    analogWrite(A2,255);
-    analogWrite(A3,255);
-    isFlashing = false;
-  }
-  else if(command==2) {
-    motor.run(FORWARD);
-    Serial.println("forward");
     analogWrite(A2,0);
     analogWrite(A3,0);
     isFlashing = false;
   }
+  else if(command==2) {
+    motor.run(FORWARD);
+    int Speed = bluetooth.parseInt();
+    Serial.println(Speed);
+    motor.setSpeed(Speed);  
+    Serial.println("forward");
+    analogWrite(A2,255);
+    analogWrite(A3,255);
+    isFlashing = false;
+  }
   else if(command==3) {
     motor.run(BACKWARD);
+    int Speed = bluetooth.parseInt();
+    Serial.println(Speed);
+    motor.setSpeed(Speed);
     isFlashing = true;
     Serial.println("backward");
   }
