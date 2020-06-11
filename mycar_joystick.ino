@@ -4,14 +4,14 @@
 
 AF_DCMotor motor(3);
 
-const int rxpin = A0; // 接收 pin
-const int txpin = A1; // 發送 pin
-SoftwareSerial bluetooth(rxpin, txpin);
-Servo frontservo;
-int angle = 0;
-bool isFlashing = false;
-int Speed =0;
-void setup(){
+  const int rxpin = A0; // 接收 pin
+  const int txpin = A1; // 發送 pin
+  SoftwareSerial bluetooth(rxpin, txpin);
+  Servo frontservo;
+  int angle = 0;
+  bool isFlashing = false;
+  int Speed =0;
+  void setup(){
   motor.setSpeed(200);
   motor.run(RELEASE);
   
@@ -22,7 +22,8 @@ void setup(){
   bluetooth.setTimeout(100);
   Serial.println("Bluetooth ready");
 
-  frontservo.attach(10);
+  frontservo.attach(9);
+  frontservo.write(90);
   pinMode(A2,OUTPUT);
   digitalWrite(A2,LOW);
   pinMode(A3,OUTPUT);
@@ -31,17 +32,27 @@ void setup(){
   
 void loop() {
   int command = GetCommand();  
-  ExecCommand(command);
+  if(command>0) {
+    ExecCommand(command);
+  }
+
 }
 
 int GetCommand() {
-  int command = bluetooth.parseInt();
+  int command = 0;
+  if(bluetooth.available()) {
+    command = bluetooth.parseInt();
+    if(command>0) {
+      Serial.print("cmd:");
+      Serial.println(command);
+    }
+    //int command = Serial.parseInt();
+  }
   return command;
 }
 
 void ExecCommand(int command){
-
-  if(command==1) {
+ if(command==1) {
     motor.run(RELEASE);
     Serial.println("stop");
     analogWrite(A2,0);
@@ -49,11 +60,12 @@ void ExecCommand(int command){
     isFlashing = false;
   }
   else if(command==2) {
-    motor.run(FORWARD);
     int Speed = bluetooth.parseInt();
+    //int Speed = Serial.parseInt();
     Serial.println(Speed);
-    motor.setSpeed(Speed);  
+    motor.setSpeed(200);  
     Serial.println("forward");
+    motor.run(FORWARD);
     analogWrite(A2,255);
     analogWrite(A3,255);
     isFlashing = false;
@@ -65,6 +77,7 @@ void ExecCommand(int command){
     motor.setSpeed(Speed);
     isFlashing = true;
     Serial.println("backward");
+    
   }
   else if (command==4){
     int angle = bluetooth.parseInt();
