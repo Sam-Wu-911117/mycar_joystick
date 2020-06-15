@@ -1,7 +1,6 @@
 #include <AFMotor.h>
 #include <SoftwareSerial.h>
 #include <Servo.h>
-//#include <NeoSWSerial.h>
 AF_DCMotor motor(3);
 
   const int rxpin = A0; // 接收 pin
@@ -73,7 +72,7 @@ void ExecCommand(int command){
     int Speed = bluetooth.parseInt();
     //int Speed = Serial.parseInt();
     Serial.println(Speed);
-    motor.setSpeed(200);  
+    //motor.setSpeed(200);  
     Serial.println("forward");
     motor.run(FORWARD);
     analogWrite(A2,255);
@@ -92,12 +91,8 @@ void ExecCommand(int command){
   else if (command==4){
     angle = bluetooth.parseInt();
     Serial.println(angle); 
-//    frontservo.attach(9);
-//    frontservo.write(angle);
-//    delay(1000);
-//    frontservo.detach();
-//    isFlashing = false;
    }
+  
   if(isFlashing) {
       flash(); 
   }
