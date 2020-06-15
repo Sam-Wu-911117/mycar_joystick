@@ -1,17 +1,18 @@
 #include <AFMotor.h>
 #include <SoftwareSerial.h>
 #include <Servo.h>
-
+//#include <NeoSWSerial.h>
 AF_DCMotor motor(3);
 
   const int rxpin = A0; // 接收 pin
   const int txpin = A1; // 發送 pin
-  SoftwareSerial bluetooth(rxpin, txpin);
+  SoftwareSerial bluetooth (rxpin, txpin);
   Servo frontservo;
   int angle = 0;
   bool isFlashing = false;
   int Speed =0;
-  void setup(){
+  
+void setup(){
   motor.setSpeed(200);
   motor.run(RELEASE);
   
@@ -24,6 +25,8 @@ AF_DCMotor motor(3);
 
   frontservo.attach(9);
   frontservo.write(90);
+  delay(500);
+  frontservo.detach();
   pinMode(A2,OUTPUT);
   digitalWrite(A2,LOW);
   pinMode(A3,OUTPUT);
@@ -35,7 +38,14 @@ void loop() {
   if(command>0) {
     ExecCommand(command);
   }
-
+  frontservo.attach(9);
+  
+  int cangle = frontservo.read();
+  if(cangle!=angle) {
+    frontservo.write(angle);
+    delay(30);
+  }
+  frontservo.detach();
 }
 
 int GetCommand() {
@@ -80,10 +90,13 @@ void ExecCommand(int command){
     
   }
   else if (command==4){
-    int angle = bluetooth.parseInt();
+    angle = bluetooth.parseInt();
     Serial.println(angle); 
-    frontservo.write(angle);
-    isFlashing = false;
+//    frontservo.attach(9);
+//    frontservo.write(angle);
+//    delay(1000);
+//    frontservo.detach();
+//    isFlashing = false;
    }
   if(isFlashing) {
       flash(); 
